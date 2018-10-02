@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+    <div id="app">
+        <div class="search-box">
+            <input type="text" class="search" placeholder="搜索喜欢的歌曲" v-model="song" @keyup.enter='searchSong'>
+            <i class="search-icon"></i>
+            <ul class="operate">
+                <li class="collect"><i></i>收藏</li>
+                <li class="add"><i></i>添加到</li>
+                <li class="download"><i></i>下载</li>
+                <li class="delete"><i></i>删除</li>
+                <li class="clear"><i></i>清空列表</li>
+            </ul>
+        </div>
+        <div class="song-list">
+            <ul>
+                <li class="title">
+                    <input type="checkbox">
+                    <span class="song">歌曲</span>
+                    <span class="singer">歌手</span>
+                    <span class="time">时长</span>
+                </li>
+                <transition-group name='list' tag="ul">
+                    <li class="song-info" v-for="(item, index) in songList" :key="item.id" :style="{transitionDelay: index*100+'ms'}">
+                        <input type="checkbox">
+                        <i :class="{playGif:isPlay}"></i>
+                        <span class="song" @click="play(item.id)">{{ item.name }}</span>
+                        <span class="singer">{{ item.artists[0].name }}</span>
+                        <span class="time">{{Math.floor(item.duration/1000/60)}}:{{ Math.floor(item.duration/1000%60)}}</span>
+                    </li>
+                </transition-group>
+            </ul>
+        </div>
+        <div class="player">
+            <img class="icon" :src="albumUrl?albumUrl:'images/0.jpg'" alt="">
+            <div class="info">
+                <p class="song">{{ currentSong }}</p>
+                <p class="singer">{{ singer }}</p>
+                <p>
+                    <span class="current-time">00:00</span>/<span class="duration">00:00</span>
+                </p>
+            </div>
+            <div class="controls">
+                <button class="prev" title="上一首"></button>
+                <button class="pause" :class="{play:isPlay}" title="播放" @click="toPlay"></button>
+                <button class="next" title="下一首"></button>
+                <button class="mode mode-loop mode-random" title="顺序播放"></button>
+            </div>
+            <div class="voice">
+                <button class="voice-btn"></button>
+                <div class="voice-range" data-range-min='0' data-range-max='100' data-range-cur='80'>
+                    <div class="voice-current"></div>
+                    <div class="voice-circle"></div>
+                </div>
+            </div>
+            <div class="style">
+                <div class="style-off"></div>
+            </div>
+            <div class="like">
+                <div class="like-yes"></div>
+            </div>
+            <div class="comment">
+                <div :class="{commentOff:!isComment,commentOn:isComment}" @click="showComment"></div>
+            </div>
+            <div class="download">
+                <div class="download-off"></div>
+            </div>
+            <div class="eye">
+                <div></div>
+            </div>
+            <div class="progress">
+                <div class="progress-current"></div>
+            </div>
+        </div>
+        <div class="album rotate" :class="{pause:!isPlay}">
+            <img :src="albumUrl?albumUrl:'images/0.jpg'" alt="">
+        </div>
+        <audio :src="musicUrl" autoplay></audio>
+        <div class="comment-list" v-show="isComment" @click="isComment=!isComment">
+            <ul>
+                <li v-for="(item, index) in commentList" :key="item.commentId">
+                    <img :src="item.user.avatarUrl" alt="" class="user-icon">
+                    <div>
+                        <p class="user-name">{{ item.user.nickname }}</p>
+                        <p class="user-comment">{{ item.content }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+<script src="./lib/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    let app =new Vue({
+        el: '#app',
+        data: {
+            song: '',
+            songList: [],
+            musicUrl: '',
+            isPlay: false,
+            lastId: '',
+            albumUrl: '',
+            iconUrl: '',
+            currentSong: '歌曲',
+            singer: '歌手',
+            currentTime: 0,
+            duration: 0,
+            isComment: false,
+            commentList: []
+        },
+        methods: {
+            searchSong(){
+                if(this.song.trim()){
+                    axios.get(`https://autumnfish.cn/search?keywords=${this.song}`).then(res=>{
+                        console.log(res);
+                        this.songList = res.data.result.songs;
+                    });
+                }   
+            },
+            play(id){
+                // console.log(this.lastId);
+                // console.log(id);
+                if(id == this.lastId){
+                    if(this.isPlay){
+                        document.querySelector('audio').pause();
+                        this.isPlay = false;
+                    }else{
+                        document.querySelector('audio').play();
+                        this.isPlay = true;
+                    }
+                }else{
+                    axios.get(`https://autumnfish.cn/music/url?id=${id}`).then(res=>{
+                        // console.log(res);
+                        // console.log(res.data.data[0]);
+                        this.musicUrl = res.data.data[0].url;
+                    });
+                    axios.get(`https://autumnfish.cn/song/detail?ids=${id}`).then(res=>{
+                        // console.log(res);
+                        this.albumUrl = res.data.songs[0].al.picUrl;
+                        this.singer = res.data.songs[0].ar[0].name;
+                        this.currentSong = res.data.songs[0].name;
+                    });
+                    axios.get(`https://autumnfish.cn/comment/music?limit=1&id=${id}`).then(res=>{
+                        console.log(res);
+                        this.commentList = res.data.hotComments;
+                        this.commentList.push(res.data.comments[0]);
+                        console.log(this.commentList);
+                        
+                    });
+                    this.isPlay = true;
+                }
+                this.lastId = id;                
+                
+            },
+            toPlay(){
+                if(this.musicUrl){
+                    if(this.isPlay){
+                        document.querySelector('audio').pause();
+                        this.isPlay = false;
+                    }else{
+                        document.querySelector('audio').play();
+                        this.isPlay = true;                        
+                    }
+                }
+            },
+            showComment(){
+                this.isComment=!this.isComment;
+            }
+        }
+    });
+
+    let cmin = 0;
+    let csec = 0;
+    let tmin = 0;
+    let tsec = 0;
+    
+    document.querySelector('audio').ontimeupdate=function () {
+        // console.log(this.currentTime/this.duration*100+'%');
+        document.querySelector('.progress-current').style.width=this.currentTime/this.duration*100+'%';
+
+        cmin = Math.floor(this.currentTime/60);
+        csec = Math.floor(this.currentTime%60);
+        cmin = cmin<10?'0'+(+cmin):cmin;
+        csec = csec<10?'0'+(+csec):csec;
+
+        tmin = Math.floor(this.duration/60);
+        tsec = Math.floor(this.duration%60);
+        tmin = tmin<10?'0'+(+tmin):tmin;
+        tsec = tsec<10?'0'+(+tsec):tsec;
+                
+        document.querySelector('.current-time').innerHTML = cmin+':'+csec;
+        document.querySelector('.duration').innerHTML = tmin?tmin+':'+tsec:'00:00';
+    };
+</script>
+</body>
+</html>

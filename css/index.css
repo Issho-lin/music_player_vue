@@ -1,0 +1,437 @@
+html {
+    height: 100%;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    background-color: rgb(41, 42, 43);
+    font-size: 14px;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.player {
+    height: 100px;
+    width: 1185px;
+    padding: 10px 20px;
+    /*background-color: grey;*/
+    box-sizing: border-box;
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+}
+.player>div{
+    margin-top: 20px;
+}
+
+.player img.icon {
+    height: 80px;
+}
+
+.player .info {
+    margin-left: 20px;
+    margin-top: 0;
+    color: #fff;
+    font-size: 16px;
+    width: 100px;
+    overflow: hidden;
+    white-space: nowrap;    
+}
+
+.player .info p {
+    margin: 5px 0 0 0;
+}
+
+.player .controls {
+    margin-left: 50px;
+}
+
+.player .controls button {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    background: url('../images/player.png');
+    border: none;
+    margin-right: 70px;
+    outline: none;
+}
+
+.player .controls .prev {
+    background-position: 1px -28px;
+}
+
+.player .controls .next {
+    background-position: 4px -51px;
+}
+
+.player .controls .pause {
+    width: 30px;
+    height: 30px;
+    background-position: 5px 1px;
+}
+
+.player .controls .play {
+    background-position: -22px 0;
+}
+
+.player .controls .mode {
+    width: 30px;
+    height: 20px;
+    background-position: 2px -262px;
+}
+
+.player .controls .mode-loop {
+    background-position-y: -72px;
+}
+
+.player .controls .mode-random {
+    background-position-y: -207px;
+}
+
+.player .progress {
+    width: 755px;
+    height: 4px;
+    border: 1px solid #716b6a;
+    cursor: pointer;
+    position: absolute;
+    bottom: 17px;
+    left: 270px;
+}
+
+.player .progress .progress-current {
+    height: 100%;
+    width: 0;
+    background-color: #d6d4d4;
+}
+
+.player .voice .voice-btn {
+    width: 30px;
+    height: 20px;
+    background: url('../images/player.png') 0 -145px ;
+    margin-top: 10px;
+    border: 0;
+    outline: none;
+}
+
+.player .voice .voice-range {
+    width: 100px;
+    height: 5px;
+    background-color: #786e6e;
+    display: inline-block;
+    margin-left: 15px;
+    margin-bottom: 6px;
+    position: relative;
+}
+
+.player .voice .voice-current {
+    height: 100%;
+    width: 80%;
+    background-color: #d5d3d2;
+}
+
+.player .voice .voice-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
+    position: absolute;
+    top: -50%;
+    left: 80%;
+}
+
+.player .style {
+    margin-left: 50px;
+    padding-top: 6px;
+}
+
+.player .style div {
+    width: 75px;
+    height: 29px;
+    background: url('../images/player.png');
+    cursor: pointer;
+}
+
+.player .style .style-off {
+    background-position: 0 -282px;
+}
+
+.player .style .style-on {
+    background-position: 0 -310px;
+}
+
+.player .like {
+    margin-left: 30px;
+    padding-top: 10px;
+}
+
+.player .like div {
+    width: 25px;
+    height: 20px;
+    background: url('../images/player.png');
+    cursor: pointer;
+}
+
+.player .like .like-no {
+    background-position: 0 -96px;
+}
+
+.player .like .like-yes {
+    background-position: -30px -96px;
+}
+
+.player .comment {
+    margin-left: 30px;
+    padding-top: 10px;
+}
+
+.player .comment div {
+    width: 24px;
+    height: 24px;
+    background: url('../images/player.png');
+    cursor: pointer;
+}
+
+.player .comment .commentOff {
+    background-position: 1px -400px;
+}
+
+.player .comment .commentOn {
+    background-position: 1px -460px;
+}
+
+.player .download{
+    margin-left: 30px;
+    padding-top: 10px;
+}
+.player .download div{
+    width: 22px;
+    height: 22px;
+    background: url('../images/player.png');
+    cursor: pointer;
+}
+.player .download .download-off{
+    background-position: 0 -120px;
+}
+.player .download .download-on{
+    background-position: 0 -370px;
+}
+.player .eye{
+    margin-left: 30px;
+    padding-top: 12px;
+}
+.player .eye div{
+    width: 20px;
+    height: 20px;
+    background: url('../images/icon_sprite.png');
+    background-position: -78px -359px;
+}
+
+.search-box {
+    width: 700px;
+    padding: 100px 200px;
+}
+
+.search-box .search {
+    /*border: 1px solid rgba(255,255,255,.2);*/
+    border: 1px solid #fff;
+    background-color: transparent;
+    outline: none;
+    width: 100%;
+    height: 40px;
+    padding-left: 60px;
+    color: #fff;
+    font-size: 20px;
+    border-radius: 5px;
+}
+.search-box .search-icon{
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background: url('../images/icon_sprite.png') 0 -260px;
+    position: absolute;
+    transform: translate(20px,-32px);
+}
+.search-box .operate{
+    margin-top: 20px;
+}
+.search-box .operate li {
+    color: #fff;
+    float: left;
+    padding: 10px 23px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    text-align: center;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.search-box .operate li:hover {
+    border-color: #fff;
+}
+
+.search-box .operate li i {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    background: url('../images/icon_sprite.png');
+}
+
+.search-box .operate .collect i {
+    background-position: -60px -18px;
+}
+
+.search-box .operate .add i {
+    background-position: -20px -20px;
+}
+
+.search-box .operate .download i {
+    background-position: -40px -240px;
+}
+
+.search-box .operate .delete i {
+    background-position: -100px -20px;
+}
+
+.search-box .operate .clear i {
+    background-position: -41px -301px;
+}
+
+.song-list {
+    color: #fff;
+    margin-left: 222px;
+    height: 200px;
+    overflow: auto;
+    position: relative;
+}
+.song-list .title{
+    position: fixed;
+    top: 220px;
+}
+.song-list::-webkit-scrollbar {
+    display: none;
+}
+.song-list ul li{
+    position: relative;
+    line-height: 40px;
+    cursor: pointer;
+}
+.song-list ul li .playGif{
+    width: 10px;
+    height: 10px;
+    background: url('../images/wave.gif');
+    position: absolute;
+    left: 50px;
+    top: 15px;
+}
+
+.song-list ul li span{
+    display: inline-block;
+}
+.song-list ul li .song{
+    margin-left: 47px;
+    width: 300px;    
+}
+.song-list ul li .singer{
+    margin-left: 100px;
+    width: 200px;    
+}
+.song-list ul li .time{
+    width: 50px;
+}
+
+.album {
+    position: absolute;
+    right: 200px;
+    bottom: 200px;
+}
+
+.album img {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+}
+
+.comment-list{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    background-color: rgba(90, 86, 86, 0.5);
+}
+.comment-list ul{
+    height: 500px;
+    width: 500px;
+    overflow: auto;
+    margin-left: 1000px;
+    margin-top: 50px;
+}
+.comment-list ul::-webkit-scrollbar{
+    display: none;
+}
+.comment-list ul li{
+    margin-top: 40px;
+    display: flex;
+}
+.comment-list ul .user-icon{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.comment-list ul p{
+    color: #fff;      
+    font-size: 12px; 
+    margin-top: 5px;
+}
+
+.comment-list ul .user-name{
+    font-weight: 700;
+}
+
+
+.list-enter-active{
+    transition: all 1s;
+    transition-delay: 1s;
+}
+.list-enter{
+    opacity: 0;
+    transform: translateY(300px);
+}
+.list-leave{
+    transition: all 1s;
+}
+.list-leave-active{
+    opacity: 0;
+    transform: translateY(-300px);
+}
+
+
+.rotate{
+    animation: autoRotate 30s infinite linear;
+}
+.pause{
+    animation-play-state: paused;
+}
+
+  @keyframes autoRotate{
+    from{
+        transform: rotateZ(0deg)
+    }
+    50%{
+        transform: rotateZ(180deg)
+    }
+    to{
+        transform: rotateZ(360deg)
+    }
+}
