@@ -7,8 +7,9 @@
     <title>Document</title>
     <link rel="stylesheet" href="./css/index.css">
 </head>
+
 <body>
-    <div id="app">
+    <div id="app" v-cloak>
         <div class="search-box">
             <input type="text" class="search" placeholder="搜索喜欢的歌曲" v-model="song" @keyup.enter='searchSong'>
             <i class="search-icon"></i>
@@ -52,10 +53,10 @@
                 <button class="prev" title="上一首"></button>
                 <button class="pause" :class="{play:isPlay}" title="播放" @click="toPlay"></button>
                 <button class="next" title="下一首"></button>
-                <button class="mode mode-loop mode-random" title="顺序播放"></button>
+                <button class="mode" :class="{modeLoop:isLoop}" :title="title"  @click="toLoop"></button>
             </div>
             <div class="voice">
-                <button class="voice-btn"></button>
+                <button class="voice-btn" :class="{voiceOn:!isMuted,voiceOff:isMuted}" @click="toMuted"></button>
                 <div class="voice-range" data-range-min='0' data-range-max='100' data-range-cur='80'>
                     <div class="voice-current"></div>
                     <div class="voice-circle"></div>
@@ -65,7 +66,7 @@
                 <div class="style-off"></div>
             </div>
             <div class="like">
-                <div class="like-yes"></div>
+                <div :class="{likeOn:isLike,likeOff:!isLike}" @click="isLike=!isLike"></div>
             </div>
             <div class="comment">
                 <div :class="{commentOff:!isComment,commentOn:isComment}" @click="showComment"></div>
@@ -96,11 +97,10 @@
             </ul>
         </div>
     </div>
-
-<script src="./lib/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-    let app =new Vue({
+    <script src="./lib/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+    let app = new Vue({
         el: '#app',
         data: {
             song: '',
@@ -115,91 +115,153 @@
             currentTime: 0,
             duration: 0,
             isComment: false,
-            commentList: []
+            commentList: [],
+            isMuted: false,
+            isLike: false,
+            isLoop: false,
+            title: '循环播放',
+            audio: ''
         },
         methods: {
-            searchSong(){
-                if(this.song.trim()){
-                    axios.get(`https://autumnfish.cn/search?keywords=${this.song}`).then(res=>{
+            searchSong() {
+                if (this.song.trim()) {
+                    axios.get(`https://autumnfish.cn/search?keywords=${this.song}`).then(res => {
                         console.log(res);
                         this.songList = res.data.result.songs;
                     });
-                }   
+                }
             },
-            play(id){
-                // console.log(this.lastId);
-                // console.log(id);
-                if(id == this.lastId){
-                    if(this.isPlay){
-                        document.querySelector('audio').pause();
+            play(id) {
+                console.log(this.audio);
+                if (id == this.lastId) {
+                    if (this.isPlay) {
+                        this.audio.pause();
                         this.isPlay = false;
-                    }else{
-                        document.querySelector('audio').play();
+                    } else {
+                        this.audio.play();
                         this.isPlay = true;
                     }
-                }else{
-                    axios.get(`https://autumnfish.cn/music/url?id=${id}`).then(res=>{
+                } else {
+                    axios.get(`https://autumnfish.cn/music/url?id=${id}`).then(res => {
                         // console.log(res);
                         // console.log(res.data.data[0]);
                         this.musicUrl = res.data.data[0].url;
+                        this.audio = document.querySelector('audio');
                     });
-                    axios.get(`https://autumnfish.cn/song/detail?ids=${id}`).then(res=>{
+                    axios.get(`https://autumnfish.cn/song/detail?ids=${id}`).then(res => {
                         // console.log(res);
                         this.albumUrl = res.data.songs[0].al.picUrl;
                         this.singer = res.data.songs[0].ar[0].name;
                         this.currentSong = res.data.songs[0].name;
                     });
-                    axios.get(`https://autumnfish.cn/comment/music?limit=1&id=${id}`).then(res=>{
+                    axios.get(`https://autumnfish.cn/comment/music?limit=1&id=${id}`).then(res => {
                         console.log(res);
                         this.commentList = res.data.hotComments;
                         this.commentList.push(res.data.comments[0]);
                         console.log(this.commentList);
-                        
+
                     });
                     this.isPlay = true;
                 }
-                this.lastId = id;                
-                
+                this.lastId = id;
+
             },
-            toPlay(){
-                if(this.musicUrl){
-                    if(this.isPlay){
-                        document.querySelector('audio').pause();
+            toPlay() {
+                if (this.musicUrl) {
+                    if (this.isPlay) {
+                        this.audio.pause();
                         this.isPlay = false;
-                    }else{
-                        document.querySelector('audio').play();
-                        this.isPlay = true;                        
+                    } else {
+                        this.audio.play();
+                        this.isPlay = true;
                     }
                 }
             },
-            showComment(){
-                this.isComment=!this.isComment;
+            showComment() {
+                this.isComment = !this.isComment;
+            },
+            toMuted() {
+                this.isMuted = !this.isMuted;
+                if(this.isMuted)
+                    this.audio.muted = true;
+                else
+                    this.audio.muted = false;
+            },
+            toLoop() {
+                this.isLoop = !this.isLoop;
+                if(this.isLoop){
+                    this.audio.loop = true;
+                    this.title = '顺序播放';
+                }
+                else{
+                    this.audio.loop = false;
+                    this.title = '循环播放';
+                }
             }
+        },
+        mounted(){
+            let cmin = 0;
+            let csec = 0;
+            let tmin = 0;
+            let tsec = 0;
+            let progressCurrent = document.querySelector('.progress-current');
+            let ctime = document.querySelector('.current-time');
+            let duration = document.querySelector('.duration');
+            this.audio = document.querySelector('audio');
+
+            this.audio.ontimeupdate = function() {
+                // console.log(this.currentTime/this.duration*100+'%');
+                progressCurrent.style.width = this.currentTime / this.duration * 100 + '%';
+
+                cmin = Math.floor(this.currentTime / 60);
+                csec = Math.floor(this.currentTime % 60);
+                cmin = cmin < 10 ? '0' + (+cmin) : cmin;
+                csec = csec < 10 ? '0' + (+csec) : csec;
+
+                tmin = Math.floor(this.duration / 60);
+                tsec = Math.floor(this.duration % 60);
+                tmin = tmin < 10 ? '0' + (+tmin) : tmin;
+                tsec = tsec < 10 ? '0' + (+tsec) : tsec;
+
+                ctime.innerHTML = cmin + ':' + csec;
+                duration.innerHTML = tmin ? tmin + ':' + tsec : '00:00';
+
+                console.log(this.volume);
+
+                if(this.ended){
+                    app.isPlay = false;
+                }
+            };
+
+            let voiceRange = document.querySelector('.voice-range');
+            let voiceCurrent = document.querySelector('.voice-current');
+            document.querySelector('.voice-circle').onmousedown=function(e){
+                let that = this;
+                document.documentElement.onmousemove = function(e){
+                    if(e.clientX-voiceRange.offsetLeft<0){
+                        that.style.left = 0;
+                        voiceCurrent.style.width = 0;
+                        app.audio.volume = 0;
+                    }else if(e.clientX-voiceRange.offsetLeft>100){
+                        that.style.left = '100%';
+                        voiceCurrent.style.width = '100%';
+                        app.audio.volume = 1;
+                    }
+                    else{
+                        that.style.left = e.clientX-voiceRange.offsetLeft+'%';
+                        voiceCurrent.style.width = e.clientX-voiceRange.offsetLeft+'%';
+                        app.audio.volume = (e.clientX-voiceRange.offsetLeft)/100;
+                    }
+                }
+            };
+            document.documentElement.onmouseup = function(){
+                document.documentElement.onmousemove = null;
+            };
         }
     });
-
-    let cmin = 0;
-    let csec = 0;
-    let tmin = 0;
-    let tsec = 0;
+            
     
-    document.querySelector('audio').ontimeupdate=function () {
-        // console.log(this.currentTime/this.duration*100+'%');
-        document.querySelector('.progress-current').style.width=this.currentTime/this.duration*100+'%';
-
-        cmin = Math.floor(this.currentTime/60);
-        csec = Math.floor(this.currentTime%60);
-        cmin = cmin<10?'0'+(+cmin):cmin;
-        csec = csec<10?'0'+(+csec):csec;
-
-        tmin = Math.floor(this.duration/60);
-        tsec = Math.floor(this.duration%60);
-        tmin = tmin<10?'0'+(+tmin):tmin;
-        tsec = tsec<10?'0'+(+tsec):tsec;
-                
-        document.querySelector('.current-time').innerHTML = cmin+':'+csec;
-        document.querySelector('.duration').innerHTML = tmin?tmin+':'+tsec:'00:00';
-    };
-</script>
+    </script>
 </body>
+
 </html>

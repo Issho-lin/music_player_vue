@@ -16,6 +16,10 @@ ul {
     list-style: none;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 .player {
     height: 100px;
     width: 1185px;
@@ -83,15 +87,15 @@ ul {
 .player .controls .mode {
     width: 30px;
     height: 20px;
-    background-position: 2px -262px;
+    background-position: 2px -260px;
 }
 
-.player .controls .mode-loop {
+.player .controls .modeRandom {
     background-position-y: -72px;
 }
 
-.player .controls .mode-random {
-    background-position-y: -207px;
+.player .controls .modeLoop {
+    background-position: 2px -207px;
 }
 
 .player .progress {
@@ -112,11 +116,19 @@ ul {
 
 .player .voice .voice-btn {
     width: 30px;
-    height: 20px;
-    background: url('../images/player.png') 0 -145px ;
+    height: 22px;
+    background: url('../images/player.png');
     margin-top: 10px;
     border: 0;
     outline: none;
+    cursor: pointer;
+}
+.player .voice .voiceOn{
+    background-position:  0 -142px;
+}
+
+.player .voice .voiceOff{
+    background-position: 0 -180px;
 }
 
 .player .voice .voice-range {
@@ -178,11 +190,11 @@ ul {
     cursor: pointer;
 }
 
-.player .like .like-no {
+.player .like .likeOff {
     background-position: 0 -96px;
 }
 
-.player .like .like-yes {
+.player .like .likeOn {
     background-position: -30px -96px;
 }
 
